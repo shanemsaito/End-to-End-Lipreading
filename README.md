@@ -4,7 +4,7 @@ This project is based on the 2016 paper [LipNet: End-to-End Sentence-level Lipre
 
 ## Model Summary
 
-This model uses a subset of the GRID corpus dataset, consisting of 3-second videos @ 25 fps. Using a combination of Spatial-temporal Convolutional Neural Networks and bidirectional LSTMs, the model can make sentence-level predictions of the testing data set at 95.2% accuracy.
+This model uses a subset of the GRID corpus dataset, consisting of 3-second videos @ 25 fps. Using a combination of Spatial-temporal Convolutional Neural Networks and bidirectional GRUs, the model can make sentence-level predictions of the testing data set at 95.2% accuracy.
 
 ## Dataset
 
@@ -50,6 +50,12 @@ Afterwards,
 
 ## Model
 
+The model is represented by the diagram below: 
+
+![](https://github.com/shanemsaito/end-to-end-lipreading/blob/main/cd8d0bfdef7ca5065ad735fb0afc8a49.png)
+
+My implementation uses Bidirectional LSTMs in place of Bi-GRUs to test how the data performs under a network built for larger
+
 ```python
 model = Sequential()
 
@@ -66,14 +72,14 @@ model.add(Conv3D(75, 3, padding='same'))
 model.add(Activation('relu'))
 model.add(MaxPool3D((1,2,2)))
 
-#Flattening tensors before the Bidrectional LSTMs
+#Flattening tensors before the Bidirectional GRUs
 model.add(TimeDistributed(Flatten()))
 
-#Bidrectional LSTMs
-model.add(Bidirectional(LSTM(128, kernel_initializer='Orthogonal', return_sequences=True)))
+#Bidrectional GRUs
+model.add(Bidirectional(GRU(128, kernel_initializer='Orthogonal', return_sequences=True)))
 model.add(Dropout(.5))
 
-model.add(Bidirectional(LSTM(128, kernel_initializer='Orthogonal', return_sequences=True)))
+model.add(Bidirectional(GRU(128, kernel_initializer='Orthogonal', return_sequences=True)))
 model.add(Dropout(.5))
 
 #Dense Layer
