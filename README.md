@@ -54,7 +54,9 @@ The model is represented by the diagram below:
 
 ![](https://github.com/shanemsaito/end-to-end-lipreading/blob/main/cd8d0bfdef7ca5065ad735fb0afc8a49.png)
 
-My implementation uses Bidirectional LSTMs in place of Bi-GRUs to test how the data performs under a network built for larger
+The frames feed through three spatial-temporal convolutions (activated by a ReLU) each followed by a spatial max pooling layer. Then, the extracted features are processed by 2 Bidirectional GRUs, in which each step is processed by a linear layer and a softmax. This model uses Connectionist Temporal Classification (CTC) for loss so it can apply to datasets without an alignment transcription. 
+
+### Implemented Model
 
 ```python
 model = Sequential()
@@ -86,5 +88,17 @@ model.add(Dropout(.5))
 model.add(Dense(char_to_num.vocabulary_size()+1, kernel_initializer='he_normal', activation='softmax'))
 ```
 
+### CTC Loss Function
 
-## Results
+```python
+def CTCLoss(y_true, y_pred):
+    batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")
+    input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
+    label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
+
+    input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+    label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
+
+    loss = tf.keras.backend.ctc_batch_cost(y_true, y_pred, input_length, label_length)
+    return loss
+```
