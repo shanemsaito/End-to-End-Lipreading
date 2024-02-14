@@ -46,7 +46,7 @@ To prepare the data, we convert each video to greyscale and normalize the frames
     return tf.cast((frames - mean), tf.float32) / std
 ```
 
-Afterwards, 
+Afterwards, we convert the character alignments to numbers and pad them with 0's if they are less than 40 tokens to make them all the same length. 
 
 ## Model
 
